@@ -1,8 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cloud Gmail</title>
   <style>
     body {
@@ -22,193 +21,46 @@
       max-width: 600px;
       width: 100%;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .logo-title {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    .logo-title img {
-      height: 48px;
-      animation: logoPop 1s ease-in-out forwards;
-      transform-origin: center;
-    }
-    @keyframes logoPop {
-      0% { transform: scale(0) rotate(0deg); opacity: 0; }
-      60% { transform: scale(1.2) rotate(10deg); opacity: 1; }
-      100% { transform: scale(1) rotate(0deg); }
-    }
-    input {
-      padding: 0.75rem;
-      font-size: 1rem;
-      width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-    button {
-      padding: 0.75rem 1.5rem;
-      background: #4285F4;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #3367D6;
-    }
-    .result {
-      margin-top: 1rem;
-      background: #e8f0fe;
-      padding: 1.25rem;
-      border-radius: 8px;
-      word-break: break-word;
       text-align: center;
-      font-size: 1.2rem;
-      font-weight: bold;
-      animation: popIn 0.3s ease-in-out;
     }
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-    .history {
-      margin-top: 2rem;
-    }
-    .history-item {
-      background: #fafafa;
+    input, button {
       padding: 0.75rem;
-      margin-top: 0.5rem;
+      width: 100%;
+      margin-top: 1rem;
+      border: 1px solid #ccc;
       border-radius: 6px;
-      border: 1px solid #ddd;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      font-size: 1rem;
     }
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      color: #fff;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      animation: fadeInOut 2.3s ease-out;
-    }
-    @keyframes fadeInOut {
-      0% { opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { opacity: 0; }
+    .alias {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: green;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo-title">
-      <img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico" alt="Gmail Logo">
-      <h2>Cloud Gmail</h2>
-    </div>
-    <p>📧Generate creative New Cloud Gmail using dots, numbers, and cool English words. Still goes to your inbox!💌</p>
-    <input type="email" id="baseEmail" placeholder="yourname@gmail.com" />
-    <button onclick="generateAlias()">Generate New Mail</button>
-    <div class="result" id="aliasResult" style="display:none;">
-      <strong>Your Mail:</strong> <span id="aliasText"></span>
-    </div>
-    <div class="history" id="historySection">
-      <h3>Mail History</h3>
-      <div id="historyList">No Mails generated yet.</div>
-    </div>
-  </div>
-
-  <script>
-    const aliasHistory = JSON.parse(localStorage.getItem('dotAliasHistory') || '[]');
-    const wordList = ["cloud", "storm", "pulse", "wave", "echo", "nova", "flare", "zone", "dash", "link", "pixel", "stack", "core", "mesh", "node", "grid"];
-
-    document.addEventListener('DOMContentLoaded', updateHistory);
+    <h1>Cloud Gmail</h1>
+    <p>Enter your Gmail to generate a signup alias:</p>
+    <input type="email" id="realEmail" placeholder="example@gmail.com" required />
+    <button onclick="generateAlias()">Generate Alias</button>
+    <div class="alias" id="output"></div>
+  </div>  <script>
+    function numberToWords(num) {
+      const words = ['zero','one','two','three','four','five','six','seven','eight','nine'];
+      return String(num).split('').map(d => words[+d]).join('.');
+    }
 
     function generateAlias() {
-      const input = document.getElementById("baseEmail").value.trim();
-      if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(input)) {
-        showToast("Please enter a valid Gmail address");
+      const email = document.getElementById('realEmail').value;
+      const [user, domain] = email.split('@');
+      if (!user || !domain || !email.includes('@')) {
+        alert('Please enter a valid Gmail address.');
         return;
       }
-
-      const [username, domain] = input.split("@");
-      const dotted = insertDots(username);
-      const numberPart = Math.random() < 0.5 ? getRandomInt(10, 9999) : "";
-      const wordPart = Math.random() < 0.6 ? getRandomWord() : "";
-
-      const alias = `${dotted}${numberPart}${wordPart}@${domain}`;
-
-      document.getElementById("aliasText").textContent = alias;
-      const resultEl = document.getElementById("aliasResult");
-      resultEl.style.display = "block";
-      navigator.clipboard.writeText(alias);
-      showToast("Mail copied to clipboard!");
-
-      if (!aliasHistory.includes(alias)) {
-        aliasHistory.unshift(alias);
-        aliasHistory.splice(10);
-        localStorage.setItem('dotAliasHistory', JSON.stringify(aliasHistory));
-        updateHistory();
-      }
+      const rand = Math.floor(100 + Math.random() * 899);
+      const alias = `${user}+${numberToWords(rand)}@${domain}`;
+      document.getElementById('output').innerText = `Signup Email: ${alias}`;
     }
-
-    function insertDots(username) {
-      let result = "";
-      let prevDot = false;
-      for (let i = 0; i < username.length; i++) {
-        result += username[i];
-        if (i < username.length - 1 && !prevDot && Math.random() < 0.4) {
-          result += ".";
-          prevDot = true;
-        } else {
-          prevDot = false;
-        }
-      }
-      return result.replace(/^\.+/, '').replace(/\.+$/, '').replace(/\.{2,}/g, '.');
-    }
-
-    function getRandomInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function getRandomWord() {
-      return wordList[Math.floor(Math.random() * wordList.length)];
-    }
-
-    function updateHistory() {
-      const historyList = document.getElementById("historyList");
-      if (aliasHistory.length === 0) {
-        historyList.innerHTML = "No Mail generated yet.";
-        return;
-      }
-
-      historyList.innerHTML = aliasHistory.map(alias => `
-        <div class="history-item">
-          <span>${alias}</span>
-          <button onclick="copyToClipboard('${alias}')">Copy</button>
-        </div>
-      `).join("");
-    }
-
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text);
-      showToast("Copied to clipboard!");
-    }
-
-    function showToast(msg) {
-      const toast = document.createElement("div");
-      toast.className = "toast";
-      toast.textContent = msg;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2300);
-    }
-  </script>
-</body>
+  </script></body>
 </html>
